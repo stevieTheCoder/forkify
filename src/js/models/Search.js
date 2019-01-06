@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { key } from '../config';
 
 export default class Search {
     constructor(query) {
@@ -8,7 +7,7 @@ export default class Search {
 
     async getResults() {
         try {
-            const res = await axios(`https://www.food2fork.com/api/search?key=${key}&q=${this.query}`);
+            const res = await axios(`https://www.food2fork.com/api/search?key=${process.env.API_KEY}&q=${this.query}`);
         this.result = res.data.recipes;
         } catch (error) {
             console.log(error);
