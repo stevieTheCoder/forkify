@@ -1,7 +1,9 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe';
+import List from './models/List';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
+import * as listView from './views/listView';
 import { elements, renderLoader, clearLoader, elementStrings } from './views/base';
 
 
@@ -95,6 +97,43 @@ const controlRecipe = async () => {
 
 ['hashchange', 'load'].forEach(event => window.addEventListener(event, controlRecipe));
 
+/*
+* LIST CONTROLLER
+*/
+const controlList = () => {
+    // create a new list if there is none yet
+    if (!state.list) state.list = new List();
+
+    //Add each incregient to the list and UI
+    state.recipe.ingredients.forEach(cur => {
+        const item = state.list.addItem(cur.count, cur.unit, cur.ingredient);        
+        listView.renderItem(item);
+    });    
+}
+
+// Handle delete and update list item events
+elements.shoppingList.addEventListener('click', e => {
+    const id = e.target.closest('.shopping__item').dataset.itemid;
+
+    // Handle delete button click
+    if (e.target.matches('.shopping__delete, .shopping__delete *')) {
+        // Delete from state and UI
+        state.list.deleteItem(id);
+        listView.deleteItem(id);
+
+    //Handle the count update
+    } else if (e.target.matches('.shopping__count-value')) {
+        const val = parseFloat(e.target.value);
+        
+        if (val < 0) {
+            e.target.value = `${state.list.items.find(cur => cur.id === id).count}`;
+            return;
+        } else {
+            state.list.changeCount(id, val);
+        }        
+    }
+});
+
 // Handling recipe button clicks
 elements.recipe.addEventListener('click', e => {
     if (e.target.matches('.btn-decrease, .btn-decrease *')) {
@@ -107,5 +146,8 @@ elements.recipe.addEventListener('click', e => {
         //Increase button is clicked
         state.recipe.updateServings('inc');
         recipeView.updateServingsIngredients(state.recipe);
+    } else if (e.target.matches('.recipe__btn--add, .recipe__btn--add *')){
+        //Add shopping list
+        controlList();
     }
 });

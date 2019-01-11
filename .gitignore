@@ -1,4 +1,6 @@
 .env
+.DS_Store
+/.vscode
 /dist/js
 /dist/index.html
 /node_modules
