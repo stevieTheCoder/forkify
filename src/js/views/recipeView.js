@@ -9,15 +9,16 @@ const formatCount = count => {
     if (count) {
         // count = 2.5 --> 2 1/2
         // count = 0.5 --> 1/2
-        const [int, dec] = count.toString().split('.').map(cur => parseInt(cur, 10));
+        const roundCount = Math.round(count * 10000) / 10000;
+        const [int, dec] = roundCount.toString().split('.').map(cur => parseInt(cur, 10));
 
-        if (!dec) return count;
+        if (!dec) return roundCount;
 
         if (int === 0) {
-            const fractional = new Fraction(count);
+            const fractional = new Fraction(roundCount);
             return `${fractional.numerator}/${fractional.denominator}`;
         } else {
-            const fractional = new Fraction(count - int);
+            const fractional = new Fraction(roundCount - int);
             return `${int} ${fractional.numerator}/${fractional.denominator}`;
         }
     }
